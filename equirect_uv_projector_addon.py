@@ -18,11 +18,15 @@ class EquirectangularUVProjector(bpy.types.Operator):
         xyl = v.xy.length
         if xyl == 0:
             alfa = math.pi/2
+            if v.z > 0:
+                V = 1
+            else:
+                V = 0
         else:
             alfa = math.atan(v.z/xyl)
-        V = alfa/math.pi+0.5
+            V = alfa/math.pi+0.5
         U = math.atan2(v.y,v.x)/math.pi/2+0.5
-        return mathutils.Vector((U, V))    
+        return mathutils.Vector((U, V))
     
     def execute(self, context): 
         obj = context.active_object
