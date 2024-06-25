@@ -39,6 +39,40 @@ class EquirectangularUVProjector(bpy.types.Operator):
                 uv = EquirectangularUVProjector.calc_uv(v.co-cl)
                 ul =  me.uv_layers.active
                 ul.data[l.index].uv = uv
+            for i in f.loop_indices:
+                l = me.loops[i]
+                vi = l.vertex_index
+                ul =  me.uv_layers.active
+                uv = ul.data[l.index].uv
+                if uv.x > 0.9999:
+                    u = 0
+                    count = 0
+                    for j in f.loop_indices:
+                        l2 = me.loops[j]
+                        uv2 = ul.data[l2.index].uv
+                        edge = me.edges[l2.edge_index]
+                        if uv2.x < 0.5:
+                            count = count + 1
+                    if count > 0:
+                        uv.x = 0
+            for i in f.loop_indices:
+                l = me.loops[i]
+                vi = l.vertex_index
+                ul =  me.uv_layers.active
+                uv = ul.data[l.index].uv
+                if uv.y == 0 or uv.y == 1:
+                    u = 0
+                    count = 0
+                    for j in f.loop_indices:                            
+                        l2 = me.loops[j]
+                        uv2 = ul.data[l2.index].uv
+                        edge = me.edges[l2.edge_index]
+                        if j != i:
+                            if uv2.y != 0 or uv2.y != 1:
+                                u = u + uv2.x
+                                count = count + 1
+                    u = u / count
+                    uv.x = u
         return { 'FINISHED' }
 
 def menu_func(self, context):
@@ -50,6 +84,7 @@ def register():
 
 def unregister():
     bpy.utils.unregister_class(EquirectangularUVProjector)
+
 
 if __name__ == "__main__":
     register()
